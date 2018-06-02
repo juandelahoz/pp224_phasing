@@ -54,5 +54,4 @@ def possHaps (g):
 
 
 for g in gtypes:
-	for h in possHaps(g):
-		print h
+	print(possHaps(g))
