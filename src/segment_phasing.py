@@ -63,9 +63,14 @@ def possHaps (g):
 		pairs.append([h, comp])
 	return pairs
 
-
 total_haps = []
 for g in gtypes:
 	total_haps.append(possHaps(g))
 
 print(total_haps)
+
+def initialize_probs(listGhap):
+	setH = set(listGhap)
+	listH = list(setH)
+	listpH = [float(1)/float(len(listH))]*len(listH)
+	return listH,listpH
