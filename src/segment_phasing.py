@@ -50,6 +50,11 @@ def possHaps (g):
 
 	return ph
 
+def initialize_probs(listGhap):
+	setH = set(listGhap)
+	listH = list(setH)
+	listpH = [float(1)/float(len(listH))]*len(listH)
+	return listH,listpH
 
 
 
