@@ -1,8 +1,15 @@
 import sys
 import math
 
-gtypes = ['01210','10222','00110']
+#gtypes = ['01210','10222','00110']
 #gtypes = ['01210']
+full_genotypes = ['']*50
+gtypes = []
+
+input_file = open('../data/example_data_1.txt', 'r')
+
+
+
 
 
 def possHaps (g):
@@ -12,7 +19,10 @@ def possHaps (g):
 	for snp in g:
 		if (snp == '1'):
 			num_het = num_het + 1
-	ph = ['']*int(math.pow(2, num_het-1))
+	if (num_het > 0):
+		ph = ['']*int(math.pow(2, num_het-1))
+	else:
+		ph = ['']
 
 	i = 0
 	j = 0
@@ -63,11 +73,40 @@ def possHaps (g):
 		pairs.append([h, comp])
 	return pairs
 
-total_haps = []
-for g in gtypes:
-	total_haps.append(possHaps(g))
+def threeLists (gtypes):
+	listGhap = []
+	listG = []
+	listG_h = []
+	a = 1 # this is G
+	b = 1 # this is G_h
+	for g in gtypes:
+		#listGhap.append(possHaps(g))
+		b = 1
+		for pair in possHaps(g):
+			for h in pair:
+				listGhap.append(h)
+				listG.append(a)
+				listG_h.append(b)
+			b = b + 1
+		a = a + 1
 
-print(total_haps)
+	return listG, listG_h, listGhap
+
+for line in input_file:
+	line = line.strip().split(' ')
+	i = 0
+	while (i < 50):
+		full_genotypes[i] = full_genotypes[i]+line[i]
+		i = i + 1
+
+spot = 0
+while (spot < 20):
+	gtypes = []
+	for g in full_genotypes:
+		gtypes.append(g[spot:spot+10])
+	print(threeLists(gtypes))
+	#print(threeLists(gtypes))
+	spot = spot + 8
 
 def initialize_probs(listGhap):
 	setH = set(listGhap)
