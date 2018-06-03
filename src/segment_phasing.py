@@ -1,14 +1,6 @@
 import sys
 import math
 
-gtypes = ['00211','10222','00110']
-#gtypes = ['01210']
-#full_genotypes = ['']*50
-#gtypes = []
-
-#input_file = open('../data/example_data_1.txt', 'r')
-
-
 def possHaps (g):
 	pairs = []
 	num_het = 0
@@ -144,24 +136,35 @@ def m_step(listH, listpGn, listGhap, listpH, num_ppl):
 		listpH[i] = freq_sum/(2.0*num_ppl)
 	return listpH
 
-'''
+###############################################################################
+
+#input_file = open('../data/example_data_1.txt', 'r')
+input_file = open('../test/ex1_20.txt', 'r')
+k = 20
+
+#gtypes = ['00211','10222','00110']
+#gtypes = ['01210']
+n=50
+full_genotypes = ['']*n
+gtypes = []
+
+
 for line in input_file:
 	line = line.strip().split(' ')
 	i = 0
-	while (i < 50):
+	while (i < n):
 		full_genotypes[i] = full_genotypes[i]+line[i]
 		i = i + 1
 
 spot = 0
-while (spot < 20):
+while (spot < k):
 	gtypes = []
 	for g in full_genotypes:
-		gtypes.append(g[spot:spot+10])
-	print(threeLists(gtypes))
-	spot = spot + 8
+		gtypes.append(g[spot:spot+k])
+	spot = spot + k
 
-num_ppl = max(listG)
-'''
+########################
+
 listG, listGh, listGhap = threeLists(gtypes)
 listH, listpH = initialize_probs(listGhap)
 print(listG)
