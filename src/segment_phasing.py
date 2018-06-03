@@ -74,3 +74,18 @@ def initialize_probs(listGhap):
 	listH = list(setH)
 	listpH = [float(1)/float(len(listH))]*len(listH)
 	return listH,listpH
+
+
+
+def m_step(listH,listpGn,listGhap,listpH,num_ppl):
+	for i in range(0,len(listH)):
+		haplotype = listH[i]
+		matches = [i for i, e in enumerate(listGhap) if e == haplotype]
+		freq_sum = 0.0
+		for index in matches:
+			freq_sum += listpGn[index]
+		listpH[i] = freq_sum/(2.0*num_ppl)
+	return listpH
+
+
+num_ppl = max(listG)
