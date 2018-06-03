@@ -1,15 +1,12 @@
 import sys
 import math
 
-#gtypes = ['01210','10222','00110']
+gtypes = ['00211','10222','00110']
 #gtypes = ['01210']
-full_genotypes = ['']*50
-gtypes = []
+#full_genotypes = ['']*50
+#gtypes = []
 
-input_file = open('../data/example_data_1.txt', 'r')
-
-
-
+#input_file = open('../data/example_data_1.txt', 'r')
 
 
 def possHaps (g):
@@ -92,6 +89,62 @@ def threeLists (gtypes):
 
 	return listG, listG_h, listGhap
 
+def initialize_probs(listGhap):
+	setH = set(listGhap)
+	listH = list(setH)
+	listpH = [float(1)/float(len(listH))]*len(listH)
+	return listH, listpH
+
+def e_step(listG, listGh, listGhap, listH, listpH):
+
+	listpG     = [0] * len(listGhap)    # to store P(h_i |G)
+	listpPhase = [0] * len(listGhap)    # to store p(hihj|G)
+	for i in range(len(listGhap)):      # look in all possible phases
+		h = listGhap[i]
+		for j in range(len(listH)):
+			if h == listH[j]:           # find each haplotype
+				listpG[i] = listpH[j]   # store its probability
+				break
+		if (i % 2) == 1:
+			listpPhase[i-1] = listpPhase[i] = listpG[i-1] * listpG[i]
+
+	listpGn    = [0] * len(listGhap)
+	sumpPhase  = 0
+	br_bc = 0
+	currG = 1
+
+	for i in range(len(listG)):
+		if listG[i] == currG:          # while inside each G
+			br_fw = i                  # advance forward bracket
+			sumpPhase += listpPhase[i] # sum over all probs inside G
+		else:                          # normalize for all h in G
+			sumpPhase /= 2             # remove double counts (hi + hj)
+			for k in range( br_bc, br_fw+1):  # look at h inside each G
+				listpGn[k] = listpPhase[k] / sumpPhase
+
+			# update
+			currG = listG[i]
+			sumpPhase = listpPhase[i]
+			br_bc = i
+
+	# normalize for all h in last G
+	sumpPhase /= 2
+	for k in range( br_bc, br_fw+1):
+		listpGn[k] = listpPhase[k] / sumpPhase
+
+	return listpGn
+
+def m_step(listH, listpGn, listGhap, listpH, num_ppl):
+	for i in range(0,len(listH)):
+		haplotype = listH[i]
+		matches = [i for i, e in enumerate(listGhap) if e == haplotype]
+		freq_sum = 0.0
+		for index in matches:
+			freq_sum += listpGn[index]
+		listpH[i] = freq_sum/(2.0*num_ppl)
+	return listpH
+
+'''
 for line in input_file:
 	line = line.strip().split(' ')
 	i = 0
@@ -105,26 +158,37 @@ while (spot < 20):
 	for g in full_genotypes:
 		gtypes.append(g[spot:spot+10])
 	print(threeLists(gtypes))
-	#print(threeLists(gtypes))
 	spot = spot + 8
 
-def initialize_probs(listGhap):
-	setH = set(listGhap)
-	listH = list(setH)
-	listpH = [float(1)/float(len(listH))]*len(listH)
-	return listH,listpH
-
-
-
-def m_step(listH,listpGn,listGhap,listpH,num_ppl):
-	for i in range(0,len(listH)):
-		haplotype = listH[i]
-		matches = [i for i, e in enumerate(listGhap) if e == haplotype]
-		freq_sum = 0.0
-		for index in matches:
-			freq_sum += listpGn[index]
-		listpH[i] = freq_sum/(2.0*num_ppl)
-	return listpH
-
-
 num_ppl = max(listG)
+'''
+listG, listGh, listGhap = threeLists(gtypes)
+listH, listpH = initialize_probs(listGhap)
+print(listG)
+print(listGh)
+print(listGhap)
+print(listH)
+print([round(x,2) for x in listpH])
+
+listpGn = e_step(listG, listGh, listGhap, listH, listpH)
+print(listGhap)
+print([round(x,2) for x in listpGn])
+listpH =  m_step(listH, listpGn, listGhap, listpH, max(listG))
+print(listH)
+print([round(x,2) for x in listpH])
+listpGn = e_step(listG, listGh, listGhap, listH, listpH)
+print(listGhap)
+print([round(x,2) for x in listpGn])
+listpH =  m_step(listH, listpGn, listGhap, listpH, max(listG))
+print(listH)
+print([round(x,2) for x in listpH])
+listpGn = e_step(listG, listGh, listGhap, listH, listpH)
+print(listGhap)
+print([round(x,2) for x in listpGn])
+listpH =  m_step(listH, listpGn, listGhap, listpH, max(listG))
+print(listH)
+print([round(x,2) for x in listpH])
+listpGn = e_step(listG, listGh, listGhap, listH, listpH)
+print(listGhap)
+print([round(x,2) for x in listpGn])
+
