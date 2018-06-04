@@ -170,6 +170,40 @@ def select_Haps(listG, listGhap, listpGn):
 
 	return listMLHGs
 
+def hamming (s1, s2):
+	j = 0
+	count = 0
+	while (j < len(s1)):
+		if (s1[j] != s2[j]):
+			count = count + 1
+		j = j + 1
+	return count
+
+def maxHaplotype (listMLHG, newHapPairs):
+	i = 0 # i is individual we are looking at
+	while (i < len(listMLHG)):
+		print(i)
+		if (len(listMLHG[i][0]) == 0): #case where this is first haplotype added to the list
+			listMLHG[i][0] = newHapPairs[i][0]
+			listMLHG[i][1] = newHapPairs[i][1]
+		else:
+			overlap = 5
+			if ((listMLHG[i][0])[-overlap:] == (newHapPairs[i][0])[:overlap]):
+				listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][0])[overlap:]
+				listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][1])[overlap:]
+			elif ((listMLHG[i][0])[-overlap:] == (newHapPairs[i][1])[:overlap]):
+				listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][1])[overlap:]
+				listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][0])[overlap:]
+			else:
+				if (hamming(listMLHG[i][0])[-overlap:], newHapPairs[i][0])[:overlap]) + hamming (listMLHG[i][1])[-overlap:], newHapPairs[i][1])[:overlap]) < hamming(listMLHG[i][1])[-overlap:], newHapPairs[i][0])[:overlap]) + hamming (listMLHG[i][0])[-overlap:], newHapPairs[i][1])[:overlap])):
+					listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][0])[overlap:]
+					listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][1])[overlap:]
+				else:
+					listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][1])[overlap:]
+					listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][0])[overlap:]
+		i = i + 1
+	return listMLHG
+
 ###############################################################################
 
 #input_file = open('../data/example_data_1.txt', 'r')
@@ -209,6 +243,8 @@ listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
 print(listGhap)
 print([round(x,2) for x in listpGn])
 
-listMLHG = select_Haps(listG, listGhap, listpGn)
+listMLHGs = select_Haps(listG, listGhap, listpGn)
+totalHap = [['',''] for i in range(n)]
+listMLHG = maxHaplotype(totalHap, listMLHGs)
 
-print(listMLHGs)
+print(listMLHG)
