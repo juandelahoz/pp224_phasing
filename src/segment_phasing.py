@@ -145,19 +145,41 @@ def run_em(listH, listG, listGh, listGhap, listpH, num_iter):
 	listpGn = e_step(listG, listGh, listGhap, listH, listpH)
 	return listpGn,listpH
 
+def select_Haps(listG, listGhap, listpGn):
+
+	listMLHGs = [] # most likely haplotypes per genotype
+	MLphase  = []  # most likely phase for current genotype
+	maxPhase = 0   # likelihood of current phase
+	currG = 1
+
+	for i in range(len(listG)):
+		if listG[i] == currG:                 # while inside each G
+			if (i%2) == 1:                    # every two haplotypes
+				if maxPhase < listpGn[i]:     # compare with the past prob
+					maxPhase = listpGn[i]     # save highest prob
+					MLphase  = [listGhap[i-1],listGhap[i]]  # select hapls
+		else:
+			listMLHGs.append(MLphase)          # add the best haplotypes
+			# update
+			currG = listG[i]
+			MLphase  = []
+			maxPhase = 0
+
+	# add the best haplotypes
+	listMLHGs.append(MLphase)
+
+	return listMLHGs
 
 ###############################################################################
 
 #input_file = open('../data/example_data_1.txt', 'r')
 input_file = open('../test/ex1_30.txt', 'r')
 k = 30
-
-#gtypes = ['00211','10222','00110']
-#gtypes = ['01210']
+spot = 0
 n=50
+
 full_genotypes = ['']*n
 gtypes = []
-
 
 for line in input_file:
 	line = line.strip().split(' ')
@@ -166,7 +188,6 @@ for line in input_file:
 		full_genotypes[i] = full_genotypes[i]+line[i]
 		i = i + 1
 
-spot = 0
 while (spot < k):
 	gtypes = []
 	for g in full_genotypes:
@@ -188,4 +209,6 @@ listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
 print(listGhap)
 print([round(x,2) for x in listpGn])
 
+listMLHG = select_Haps(listG, listGhap, listpGn)
 
+print(listMLHGs)
