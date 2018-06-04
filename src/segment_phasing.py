@@ -139,7 +139,9 @@ def m_step(listH, listpGn, listGhap, listpH, num_ppl):
 def run_em(listH, listG, listGh, listGhap, listpH, num_iter):
 	for i in range(0,num_iter):
 		listpGn = e_step(listG, listGh, listGhap, listH, listpH)
+		print([round(x,2) for x in listpGn])
 		listpH = m_step(listH, listpGn, listGhap, listpH, max(listG))
+		print([round(x,2) for x in listpH])
 	listpGn = e_step(listG, listGh, listGhap, listH, listpH)
 	return listpGn,listpH
 
@@ -181,7 +183,9 @@ print(listGhap)
 print(listH)
 print([round(x,2) for x in listpH])
 
-listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 4)
+listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
 
-print(listpGn)
-print(listpH)
+print(listGhap)
+print([round(x,2) for x in listpGn])
+
+
