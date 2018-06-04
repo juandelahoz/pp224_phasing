@@ -136,11 +136,19 @@ def m_step(listH, listpGn, listGhap, listpH, num_ppl):
 		listpH[i] = freq_sum/(2.0*num_ppl)
 	return listpH
 
+def run_em(listH, listG, listGh, listGhap, listpH, num_iter):
+	for i in range(0,num_iter):
+		listpGn = e_step(listG, listGh, listGhap, listH, listpH)
+		listpH = m_step(listH, listpGn, listGhap, listpH, max(listG))
+	listpGn = e_step(listG, listGh, listGhap, listH, listpH)
+	return listpGn,listpH
+
+
 ###############################################################################
 
 #input_file = open('../data/example_data_1.txt', 'r')
-input_file = open('../test/ex1_20.txt', 'r')
-k = 20
+input_file = open('../test/ex1_30.txt', 'r')
+k = 30
 
 #gtypes = ['00211','10222','00110']
 #gtypes = ['01210']
@@ -173,25 +181,7 @@ print(listGhap)
 print(listH)
 print([round(x,2) for x in listpH])
 
-listpGn = e_step(listG, listGh, listGhap, listH, listpH)
-print(listGhap)
-print([round(x,2) for x in listpGn])
-listpH =  m_step(listH, listpGn, listGhap, listpH, max(listG))
-print(listH)
-print([round(x,2) for x in listpH])
-listpGn = e_step(listG, listGh, listGhap, listH, listpH)
-print(listGhap)
-print([round(x,2) for x in listpGn])
-listpH =  m_step(listH, listpGn, listGhap, listpH, max(listG))
-print(listH)
-print([round(x,2) for x in listpH])
-listpGn = e_step(listG, listGh, listGhap, listH, listpH)
-print(listGhap)
-print([round(x,2) for x in listpGn])
-listpH =  m_step(listH, listpGn, listGhap, listpH, max(listG))
-print(listH)
-print([round(x,2) for x in listpH])
-listpGn = e_step(listG, listGh, listGhap, listH, listpH)
-print(listGhap)
-print([round(x,2) for x in listpGn])
+listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 4)
 
+print(listpGn)
+print(listpH)
