@@ -62,13 +62,13 @@ def possHaps (g):
 		pairs.append([h, comp])
 	return pairs
 
-def threeLists (gtypes):
+def threeLists (segs):
 	listGhap = []
 	listG = []
 	listG_h = []
 	a = 1 # this is G
 	b = 1 # this is G_h
-	for g in gtypes:
+	for g in segs:
 		#listGhap.append(possHaps(g))
 		b = 1
 		for pair in possHaps(g):
@@ -139,9 +139,9 @@ def m_step(listH, listpGn, listGhap, listpH, num_ppl):
 def run_em(listH, listG, listGh, listGhap, listpH, num_iter):
 	for i in range(0,num_iter):
 		listpGn = e_step(listG, listGh, listGhap, listH, listpH)
-		print([round(x,2) for x in listpGn])
+		#print([round(x,2) for x in listpGn])
 		listpH = m_step(listH, listpGn, listGhap, listpH, max(listG))
-		print([round(x,2) for x in listpH])
+		#print([round(x,2) for x in listpH])
 	listpGn = e_step(listG, listGh, listGhap, listH, listpH)
 	return listpGn,listpH
 
@@ -179,10 +179,9 @@ def hamming (s1, s2):
 		j = j + 1
 	return count
 
-def maxHaplotype (listMLHG, newHapPairs, overlap = 5):
+def maxHaplotype (listMLHG, newHapPairs, overlap):
 	i = 0 # i is individual we are looking at
 	while (i < len(listMLHG)):
-		print(i)
 		if (len(listMLHG[i][0]) == 0): # case where this is first haplotype added to the list
 			listMLHG[i][0] = newHapPairs[i][0]
 			listMLHG[i][1] = newHapPairs[i][1]
@@ -213,16 +212,22 @@ def write_haplotypes(listMLHG):
 		outfile.write(listMLHG[j+1][0][i] + ' ' + listMLHG[j+1][1][i] + '\n')
 	outfile.close()
 
+def driver (spot):
+	segments = []
+	for gtype in full_genotypes:
+		segments.append(gtype[spot:spot+seg_len])
+	return segments, spot+step
+
 ###############################################################################
 
 #input_file = open('../data/example_data_1.txt', 'r')
 input_file = open('../test/ex1_30.txt', 'r')
 individuals = 50
-seg_len = 30
-spot = 0
-
+step = 10
+overlap = 10
+seg_len = step + overlap
 full_genotypes = [''] * individuals
-gtypes = []
+listMLHG = [['',''] for i in range(individuals)]
 
 for line in input_file: # creates full_genotypes
 	line = line.strip().split(' ')
@@ -231,33 +236,24 @@ for line in input_file: # creates full_genotypes
 		full_genotypes[i] = full_genotypes[i] + line[i]
 		i = i + 1
 
-def driver (spot):
-	segments = []
-	for gtype in full_genotypes:
-		segments.append(gtype[spot:spot+seg_len])
-	return segments, spot+step
+len_genome = len(full_genotypes[0])
+spot = 0   # to walk over the genome
 
-########################
+###############################################################################
 
-listG, listGh, listGhap = threeLists(gtypes)
-listH, listpH = initialize_probs(listGhap)
-print(listG)
-print(listGh)
-print(listGhap)
-print(listH)
-print([round(x,2) for x in listpH])
+while (spot + seg_len) <= len_genome:
+	# get segments and advance spot
+	segs, spot = driver(spot)
+	# generate all the needed lists from the genotypes
+	listG, listGh, listGhap = threeLists(segs)
+	listH, listpH = initialize_probs(listGhap)
+	# run the EM algorithm for the current segment
+	listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
+	# select the most likely haplotypes from the EM probs and the full list
+	listMLHGs = select_Haps(listG, listGhap, listpGn)
+	# extend the current genotypes 
+	listMLHG = maxHaplotype(listMLHG, listMLHGs, overlap)
 
-listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
 
-print(listGhap)
-print([round(x,2) for x in listpGn])
-
-listMLHGs = select_Haps(listG, listGhap, listpGn)
-totalHap = [['',''] for i in range(individuals)]
-listMLHG = maxHaplotype(totalHap, listMLHGs)
-
-print(listMLHG)
 write_haplotypes(listMLHG)
-
-
 
