@@ -195,7 +195,7 @@ def maxHaplotype (listMLHG, newHapPairs):
 				listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][1])[overlap:]
 				listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][0])[overlap:]
 			else:
-				if (hamming(listMLHG[i][0])[-overlap:], newHapPairs[i][0])[:overlap]) + hamming (listMLHG[i][1])[-overlap:], newHapPairs[i][1])[:overlap]) < hamming(listMLHG[i][1])[-overlap:], newHapPairs[i][0])[:overlap]) + hamming (listMLHG[i][0])[-overlap:], newHapPairs[i][1])[:overlap])):
+				if (hamming(listMLHG[i][0][-overlap:], newHapPairs[i][0][:overlap]) + hamming (listMLHG[i][1][-overlap:], newHapPairs[i][1][:overlap]) < hamming(listMLHG[i][1][-overlap:], newHapPairs[i][0][:overlap]) + hamming (listMLHG[i][0][-overlap:], newHapPairs[i][1][:overlap])):
 					listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][0])[overlap:]
 					listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][1])[overlap:]
 				else:
