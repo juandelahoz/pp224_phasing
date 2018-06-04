@@ -179,15 +179,14 @@ def hamming (s1, s2):
 		j = j + 1
 	return count
 
-def maxHaplotype (listMLHG, newHapPairs):
+def maxHaplotype (listMLHG, newHapPairs, overlap = 5):
 	i = 0 # i is individual we are looking at
 	while (i < len(listMLHG)):
 		print(i)
-		if (len(listMLHG[i][0]) == 0): #case where this is first haplotype added to the list
+		if (len(listMLHG[i][0]) == 0): # case where this is first haplotype added to the list
 			listMLHG[i][0] = newHapPairs[i][0]
 			listMLHG[i][1] = newHapPairs[i][1]
 		else:
-			overlap = 5
 			if ((listMLHG[i][0])[-overlap:] == (newHapPairs[i][0])[:overlap]):
 				listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][0])[overlap:]
 				listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][1])[overlap:]
@@ -195,7 +194,9 @@ def maxHaplotype (listMLHG, newHapPairs):
 				listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][1])[overlap:]
 				listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][0])[overlap:]
 			else:
-				if (hamming(listMLHG[i][0][-overlap:], newHapPairs[i][0][:overlap]) + hamming (listMLHG[i][1][-overlap:], newHapPairs[i][1][:overlap]) < hamming(listMLHG[i][1][-overlap:], newHapPairs[i][0][:overlap]) + hamming (listMLHG[i][0][-overlap:], newHapPairs[i][1][:overlap])):
+				if (hamming(listMLHG[i][0][-overlap:], newHapPairs[i][0][:overlap]) + 
+					hamming (listMLHG[i][1][-overlap:], newHapPairs[i][1][:overlap])) < (hamming(listMLHG[i][1][-overlap:], newHapPairs[i][0][:overlap]) + 
+					hamming (listMLHG[i][0][-overlap:], newHapPairs[i][1][:overlap])):
 					listMLHG[i][0] = listMLHG[i][0] + (newHapPairs[i][0])[overlap:]
 					listMLHG[i][1] = listMLHG[i][1] + (newHapPairs[i][1])[overlap:]
 				else:
@@ -208,28 +209,30 @@ def maxHaplotype (listMLHG, newHapPairs):
 
 #input_file = open('../data/example_data_1.txt', 'r')
 input_file = open('../test/ex1_30.txt', 'r')
-k = 30
-spot = 0
-n=50
+individuals = 50
+seg_len = 20
+spot = 10
 
-full_genotypes = ['']*n
+full_genotypes = [''] * individuals
 gtypes = []
 
 for line in input_file:
 	line = line.strip().split(' ')
 	i = 0
-	while (i < n):
-		full_genotypes[i] = full_genotypes[i]+line[i]
+	while (i < individuals):
+		full_genotypes[i] = full_genotypes[i] + line[i]
 		i = i + 1
 
-while (spot < k):
+while (spot < seg_len):
 	gtypes = []
-	for g in full_genotypes:
-		gtypes.append(g[spot:spot+k])
-	spot = spot + k
+	for genotipe in full_genotypes:
+		gtypes.append(genotipe[spot:spot+seg_len])
+	spot = spot + seg_len
+
+print(gtypes)
 
 ########################
-
+'''
 listG, listGh, listGhap = threeLists(gtypes)
 listH, listpH = initialize_probs(listGhap)
 print(listG)
@@ -248,3 +251,4 @@ totalHap = [['',''] for i in range(n)]
 listMLHG = maxHaplotype(totalHap, listMLHGs)
 
 print(listMLHG)
+'''
