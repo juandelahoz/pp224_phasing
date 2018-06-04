@@ -205,13 +205,21 @@ def maxHaplotype (listMLHG, newHapPairs, overlap = 5):
 		i = i + 1
 	return listMLHG
 
+def write_haplotypes(listMLHG):
+	outfile = open("ex1_est_sol.txt", "w")
+	for i in range(0,len(listMLHG[0][0])):
+		for j in range(0,len(listMLHG)-1):
+			outfile.write(listMLHG[j][0][i] + ' ' + listMLHG[j][1][i] + ' ')
+		outfile.write(listMLHG[j+1][0][i] + ' ' + listMLHG[j+1][1][i] + '\n')
+	outfile.close()
+
 ###############################################################################
 
 #input_file = open('../data/example_data_1.txt', 'r')
 input_file = open('../test/ex1_30.txt', 'r')
 individuals = 50
-seg_len = 20
-spot = 10
+seg_len = 30
+spot = 0
 
 full_genotypes = [''] * individuals
 gtypes = []
@@ -232,7 +240,7 @@ while (spot < seg_len):
 print(gtypes)
 
 ########################
-'''
+
 listG, listGh, listGhap = threeLists(gtypes)
 listH, listpH = initialize_probs(listGhap)
 print(listG)
@@ -247,8 +255,11 @@ print(listGhap)
 print([round(x,2) for x in listpGn])
 
 listMLHGs = select_Haps(listG, listGhap, listpGn)
-totalHap = [['',''] for i in range(n)]
+totalHap = [['',''] for i in range(individuals)]
 listMLHG = maxHaplotype(totalHap, listMLHGs)
 
 print(listMLHG)
-'''
+write_haplotypes(listMLHG)
+
+
+
