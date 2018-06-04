@@ -140,7 +140,9 @@ def run_em(listH, listG, listGh, listGhap, listpH, num_iter):
 	for i in range(0,num_iter):
 		listpGn = e_step(listG, listGh, listGhap, listH, listpH)
 		#print([round(x,2) for x in listpGn])
+		print("E-step")
 		listpH = m_step(listH, listpGn, listGhap, listpH, max(listG))
+		print("M-step")
 		#print([round(x,2) for x in listpH])
 	listpGn = e_step(listG, listGh, listGhap, listH, listpH)
 	return listpGn,listpH
@@ -204,8 +206,8 @@ def maxHaplotype (listMLHG, newHapPairs, overlap):
 		i = i + 1
 	return listMLHG
 
-def write_haplotypes(listMLHG):
-	outfile = open("ex1_est_sol.txt", "w")
+def write_haplotypes(listMLHG, file):
+	outfile = open(file, "w")
 	for i in range(0,len(listMLHG[0][0])):
 		for j in range(0,len(listMLHG)-1):
 			outfile.write(listMLHG[j][0][i] + ' ' + listMLHG[j][1][i] + ' ')
@@ -221,7 +223,8 @@ def driver (spot):
 ###############################################################################
 
 #input_file = open('../data/example_data_1.txt', 'r')
-input_file = open('../test/ex1_30.txt', 'r')
+input_file = open('../data/test_data_100.txt', 'r')
+output_file = "../data/test_data_100_sol.txt"
 individuals = 50
 step = 10
 overlap = 10
@@ -242,6 +245,7 @@ spot = 0   # to walk over the genome
 ###############################################################################
 
 while (spot + seg_len) <= len_genome:
+	print(spot)
 	# get segments and advance spot
 	segs, spot = driver(spot)
 	# generate all the needed lists from the genotypes
@@ -251,9 +255,10 @@ while (spot + seg_len) <= len_genome:
 	listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
 	# select the most likely haplotypes from the EM probs and the full list
 	listMLHGs = select_Haps(listG, listGhap, listpGn)
+	print(listMLHGs)
 	# extend the current genotypes 
 	listMLHG = maxHaplotype(listMLHG, listMLHGs, overlap)
 
 
-write_haplotypes(listMLHG)
+write_haplotypes(listMLHG, output_file)
 
