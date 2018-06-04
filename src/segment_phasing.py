@@ -224,20 +224,18 @@ spot = 0
 full_genotypes = [''] * individuals
 gtypes = []
 
-for line in input_file:
+for line in input_file: # creates full_genotypes
 	line = line.strip().split(' ')
 	i = 0
 	while (i < individuals):
 		full_genotypes[i] = full_genotypes[i] + line[i]
 		i = i + 1
 
-while (spot < seg_len):
-	gtypes = []
-	for genotipe in full_genotypes:
-		gtypes.append(genotipe[spot:spot+seg_len])
-	spot = spot + seg_len
-
-print(gtypes)
+def driver (spot):
+	segments = []
+	for gtype in full_genotypes:
+		segments.append(gtype[spot:spot+seg_len])
+	return segments, spot+step
 
 ########################
 
