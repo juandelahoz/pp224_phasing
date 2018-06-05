@@ -9,7 +9,7 @@
 ```
  python3 src/segment_phasing.py data/example_data_1.txt 5 5
 ```
-Note: output will be in format of 'example_data_1_seg{step + overlap}_ovl{overlap}.txt' so for Example 1 the output will be named 'example_data_1_seg10_ovl5.txt'
+Note: output will be in format of 'example_data_1_sol.txt'; we recommend (insist) on using 5 step and 5 overlap to optimal speed and performance.
 ### Test Data Set 1:
 ```
  python3 src/segment_phasing.py data/test_data_1.txt 5 5
