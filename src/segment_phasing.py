@@ -217,10 +217,16 @@ def write_haplotypes(listMLHG, file):
 		outfile.write(listMLHG[j+1][0][i] + ' ' + listMLHG[j+1][1][i] + '\n')
 	outfile.close()
 
-def driver (spot):
-	segments = []
-	for gtype in full_genotypes:
-		segments.append(gtype[spot:spot+seg_len])
+def driver (spot, end):
+	if (end == True):
+		segments = []
+		for gtype in full_genotypes:
+			seg_len = len_genome - spot
+			segments.append(gtype[spot:spot+seg_len])
+	else:
+		segments = []
+		for gtype in full_genotypes:
+			segments.append(gtype[spot:spot+seg_len])
 	return segments, spot+step
 
 ################################
@@ -251,11 +257,12 @@ spot = 0   # to walk over the genome
 
 ##########################
     ###    RUN!    ###
-
+end = False
 while (spot + seg_len) <= len_genome:
-
+	if ((spot + seg_len*2) > len_genome):
+		end = True
 	# get segments and advance spot
-	segs, spot = driver(spot)
+	segs, spot = driver(spot, end)
 	# generate all the needed lists from the genotypes
 	listG, listGh, listGhap = threeLists(segs)
 	listH, listpH = initialize_probs(listGhap)
@@ -270,6 +277,7 @@ while (spot + seg_len) <= len_genome:
 	listMLHGs = select_Haps(listG, listGhap, listpGn)
 	# extend the current genotypes 
 	listMLHG = maxHaplotype(listMLHG, listMLHGs, overlap)
+
 
 #print(listMLHG)
 
