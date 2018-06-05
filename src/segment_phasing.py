@@ -218,16 +218,15 @@ def write_haplotypes(listMLHG, file):
 	outfile.close()
 
 def driver (spot, end):
+	segments = []
 	if (end == True):
-		segments = []
-		new_len = len_genome - spot
+		new_len = len_genome - (spot)
 		for gtype in full_genotypes:
 			segments.append(gtype[spot:spot+new_len])
 	else:
-		segments = []
 		for gtype in full_genotypes:
 			segments.append(gtype[spot:spot+seg_len])
-	return segments, spot+step
+	return segments
 
 ################################
     ###    VARIABLES:    ###
@@ -258,17 +257,22 @@ spot = 0   # to walk over the genome
 ##########################
     ###    RUN!    ###
 end = False
-while (spot + seg_len) <= len_genome:
-	if ((spot + seg_len*2) > len_genome):
+while (spot + step) < len_genome:
+	if ((spot + seg_len) >= len_genome):
 		end = True
 	# get segments and advance spot
-	segs, spot = driver(spot, end)
+	segs = driver(spot, end)
 	# generate all the needed lists from the genotypes
 	listG, listGh, listGhap = threeLists(segs)
 	listH, listpH = initialize_probs(listGhap)
 
-	print("Phasing..." + "\tpositions: " + str(spot) + "-" + str(spot+seg_len) + 
+	if(end == False):
+		print("Phasing..." + "\tpositions: " + str(spot) + "-" + str(spot+seg_len) + 
 		"\ttotal_Haplt: " + str(len(listGh)) + "\tunique_Haplt: "  + str(len(listH)))
+	else:
+		print("Phasing..." + "\tpositions: " + str(spot) + "-" + str(len_genome) + 
+		"\ttotal_Haplt: " + str(len(listGh)) + "\tunique_Haplt: "  + str(len(listH)))
+		spot = len_genome
 
 	# run the EM algorithm for the current segment
 	listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
@@ -277,6 +281,7 @@ while (spot + seg_len) <= len_genome:
 	listMLHGs = select_Haps(listG, listGhap, listpGn)
 	# extend the current genotypes 
 	listMLHG = maxHaplotype(listMLHG, listMLHGs, overlap)
+	spot += step
 
 
 #print(listMLHG)
