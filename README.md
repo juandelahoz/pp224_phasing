@@ -3,12 +3,21 @@
 
 ## Command line usage:
 ```
- python segment_phasing.py <input_genotypes> <step> <overlap>
+ python3 segment_phasing.py <input_genotypes> <step> <overlap>
 ```
 ### Example:
 ```
- python src/segment_phasing.py data/ex1_3k.txt 5 5
+ python3 src/segment_phasing.py data/ex1_3k.txt 5 5
 ```
+### Test Data Set 1:
+```
+python3 src/segment_phasing.py data/test_data_1.txt 5 5
+```
+### Test Data Set 2:
+```
+python3 src/segment_phasing.py data/test_data_2.txt 5 5
+```
+
 Note: Most likely haplotypes are calculated for each segment. 
 	segment_length = step + overlap
 
