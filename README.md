@@ -5,17 +5,17 @@
 ```
  python3 segment_phasing.py <input_genotypes> <step> <overlap>
 ```
-### Example:
+### Example 1, 2, or 3:
 ```
- python3 src/segment_phasing.py data/ex1_3k.txt 5 5
+ python3 src/segment_phasing.py data/example_data_1.txt 5 5
 ```
 ### Test Data Set 1:
 ```
-python3 src/segment_phasing.py data/test_data_1.txt 5 5
+ python3 src/segment_phasing.py data/test_data_1.txt 5 5
 ```
 ### Test Data Set 2:
 ```
-python3 src/segment_phasing.py data/test_data_2.txt 5 5
+ python3 src/segment_phasing.py data/test_data_2.txt 5 5
 ```
 
 Note: Most likely haplotypes are calculated for each segment. 
