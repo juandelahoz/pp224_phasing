@@ -220,9 +220,9 @@ def write_haplotypes(listMLHG, file):
 def driver (spot, end):
 	if (end == True):
 		segments = []
+		new_len = len_genome - spot
 		for gtype in full_genotypes:
-			seg_len = len_genome - spot
-			segments.append(gtype[spot:spot+seg_len])
+			segments.append(gtype[spot:spot+new_len])
 	else:
 		segments = []
 		for gtype in full_genotypes:
