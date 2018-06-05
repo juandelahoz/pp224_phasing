@@ -1,6 +1,9 @@
 import sys
 import math
 
+################################
+    ###    FUNCTIONS:    ###
+
 def possHaps (g):
 	pairs = []
 	num_het = 0
@@ -220,17 +223,21 @@ def driver (spot):
 		segments.append(gtype[spot:spot+seg_len])
 	return segments, spot+step
 
-###############################################################################
+################################
+    ###    VARIABLES:    ###
 
-#input_file = open('../data/example_data_1.txt', 'r')
-input_file = open('../data/example_data_3_1k.txt', 'r')
-output_file = "../data/example_data_3_1k_sol_j6.txt"
-individuals = 50
-step = 6
-overlap = 6
+input_file = open(sys.argv[1], 'r')
+step = int(sys.argv[2])
+overlap = int(sys.argv[3])
 seg_len = step + overlap
+output_file = sys.argv[1][:-4] + "_seg" + str(seg_len) + "_ovl" + str(overlap) + ".txt"
+individuals = 50
 full_genotypes = [''] * individuals
 listMLHG = [['',''] for i in range(individuals)]
+
+if int(seg_len) > 14:
+	sys.exit("We can't handle segments larger than 14: \
+Please, choose a smaller step (" + sys.argv[2] + ") and/or overlap (" + sys.argv[3] + ")")
 
 for line in input_file: # creates full_genotypes
 	line = line.strip().split(' ')
@@ -242,7 +249,8 @@ for line in input_file: # creates full_genotypes
 len_genome = len(full_genotypes[0])
 spot = 0   # to walk over the genome
 
-###############################################################################
+##########################
+    ###    RUN!    ###
 
 while (spot + seg_len) <= len_genome:
 
@@ -252,7 +260,8 @@ while (spot + seg_len) <= len_genome:
 	listG, listGh, listGhap = threeLists(segs)
 	listH, listpH = initialize_probs(listGhap)
 
-	print("Starting..." + "\t spot: " +str(spot) + "\tlistGh: " + str(len(listGh)) + "\tlistH: "  + str(len(listH)))
+	print("Phasing..." + "\tpositions: " + str(spot) + "-" + str(spot+seg_len) + 
+		"\ttotal_Haplt: " + str(len(listGh)) + "\tunique_Haplt: "  + str(len(listH)))
 
 	# run the EM algorithm for the current segment
 	listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
@@ -262,7 +271,7 @@ while (spot + seg_len) <= len_genome:
 	# extend the current genotypes 
 	listMLHG = maxHaplotype(listMLHG, listMLHGs, overlap)
 
-print(listMLHG)
+#print(listMLHG)
 
 write_haplotypes(listMLHG, output_file)
 
