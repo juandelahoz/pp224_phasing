@@ -138,11 +138,11 @@ def m_step(listH, listpGn, listGhap, listpH, num_ppl):
 
 def run_em(listH, listG, listGh, listGhap, listpH, num_iter):
 	for i in range(0,num_iter):
+		#print("E-step:")
 		listpGn = e_step(listG, listGh, listGhap, listH, listpH)
 		#print([round(x,2) for x in listpGn])
-		print("E-step")
+		#print("M-step:")
 		listpH = m_step(listH, listpGn, listGhap, listpH, max(listG))
-		print("M-step")
 		#print([round(x,2) for x in listpH])
 	listpGn = e_step(listG, listGh, listGhap, listH, listpH)
 	return listpGn,listpH
@@ -223,11 +223,11 @@ def driver (spot):
 ###############################################################################
 
 #input_file = open('../data/example_data_1.txt', 'r')
-input_file = open('../data/test_data_100.txt', 'r')
-output_file = "../data/test_data_100_sol.txt"
+input_file = open('../data/example_data_3_1k.txt', 'r')
+output_file = "../data/example_data_3_1k_sol_j6.txt"
 individuals = 50
-step = 10
-overlap = 10
+step = 6
+overlap = 6
 seg_len = step + overlap
 full_genotypes = [''] * individuals
 listMLHG = [['',''] for i in range(individuals)]
@@ -245,20 +245,24 @@ spot = 0   # to walk over the genome
 ###############################################################################
 
 while (spot + seg_len) <= len_genome:
-	print(spot)
+
 	# get segments and advance spot
 	segs, spot = driver(spot)
 	# generate all the needed lists from the genotypes
 	listG, listGh, listGhap = threeLists(segs)
 	listH, listpH = initialize_probs(listGhap)
+
+	print("Starting..." + "\t spot: " +str(spot) + "\tlistGh: " + str(len(listGh)) + "\tlistH: "  + str(len(listH)))
+
 	# run the EM algorithm for the current segment
 	listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
+
 	# select the most likely haplotypes from the EM probs and the full list
 	listMLHGs = select_Haps(listG, listGhap, listpGn)
-	print(listMLHGs)
 	# extend the current genotypes 
 	listMLHG = maxHaplotype(listMLHG, listMLHGs, overlap)
 
+print(listMLHG)
 
 write_haplotypes(listMLHG, output_file)
 
