@@ -217,17 +217,6 @@ def write_haplotypes(listMLHG, file):
 		outfile.write(listMLHG[j+1][0][i] + ' ' + listMLHG[j+1][1][i] + '\n')
 	outfile.close()
 
-def driver (spot, end):
-	segments = []
-	if (end == True):
-		new_len = len_genome - (spot)
-		for gtype in full_genotypes:
-			segments.append(gtype[spot:spot+new_len])
-	else:
-		for gtype in full_genotypes:
-			segments.append(gtype[spot:spot+seg_len])
-	return segments
-
 ################################
     ###    VARIABLES:    ###
 
@@ -256,23 +245,37 @@ spot = 0   # to walk over the genome
 
 ##########################
     ###    RUN!    ###
-end = False
-while (spot + step) < len_genome:
-	if ((spot + seg_len) >= len_genome):
-		end = True
-	# get segments and advance spot
-	segs = driver(spot, end)
+while spot < len_genome:
+	# select segments with not too many possible haplotypes
+	pos_haps_v = [1] * individuals
+	for i in range(min(50, len_genome-spot)):
+		for g_i in range(individuals):
+			if full_genotypes[g_i][spot+i] == "1":    # if genotype is 1 (heterozygote)
+				pos_haps_v[g_i] *=2                   # possible haplotypes 2^haps
+
+		sum_pos_haps = sum([x-1 if x==1	else x for x in pos_haps_v ]) # calculate num of possible haps
+		if (i>overlap+1) and (sum(pos_haps_v) > 2000):                #  & stop if more than 2000 
+			break
+		step = i - overlap
+
+	seg_len = step + overlap
+
+	# for the end of the genome
+	if (spot + seg_len +1) >= len_genome:
+		seg_len = len_genome - spot
+		step = seg_len
+
+	segs = []
+	for gtype in full_genotypes:
+		segs.append(gtype[spot:spot+seg_len])
+
 	# generate all the needed lists from the genotypes
 	listG, listGh, listGhap = threeLists(segs)
 	listH, listpH = initialize_probs(listGhap)
 
-	if(end == False):
-		print("Phasing..." + "\tpositions: " + str(spot) + "-" + str(spot+seg_len) + 
-		"\ttotal_Haplt: " + str(len(listGh)) + "\tunique_Haplt: "  + str(len(listH)))
-	else:
-		print("Phasing..." + "\tpositions: " + str(spot) + "-" + str(len_genome) + 
-		"\ttotal_Haplt: " + str(len(listGh)) + "\tunique_Haplt: "  + str(len(listH)))
-		spot = len_genome
+#	if (spot % 1000)>950 or (spot % 1000)<50:           # just to get less output:
+	print("Phasing... " + str(seg_len) + "\tpositions: " + str(spot) + "-" + str(spot+seg_len) +  
+	"\ttotal_Haplt: " + str(len(listGh)) + "\tunique_Haplt: "  + str(len(listH)) + "\tpred" + str(sum_pos_haps))
 
 	# run the EM algorithm for the current segment
 	listpGn, listpH = run_em(listH, listG, listGh, listGhap, listpH, 3)
@@ -281,10 +284,9 @@ while (spot + step) < len_genome:
 	listMLHGs = select_Haps(listG, listGhap, listpGn)
 	# extend the current genotypes 
 	listMLHG = maxHaplotype(listMLHG, listMLHGs, overlap)
+
+	# advance
 	spot += step
-
-
-#print(listMLHG)
 
 write_haplotypes(listMLHG, output_file)
 
